@@ -1,6 +1,6 @@
 # MeetBridge
 
-MeetBridge is a macOS app built with Electron. Google Meet runs inside the Chromium browser bundled with MeetBridge; the app does not launch Google Chrome. MeetBridge keeps its own browser profile and sign-in.
+MeetBridge is for people who want Google Meet in a dedicated Mac app instead of another browser tab. It runs Meet in its own Chromium-based window, can route meeting links from Safari and other apps into that window, and adds Stream Deck shortcuts for common meeting controls. MeetBridge does not launch Google Chrome and keeps its own browser profile and sign-in.
 
 ## Build and run
 
@@ -36,7 +36,28 @@ Install the Git hooks once with `brew install pre-commit` and `pre-commit instal
 ## Link routing
 
 - On the home screen, choose **go to the Google Meet homepage** to open `meet.google.com` inside MeetBridge, or paste a specific meeting link in the join field.
-- In Safari, enable the Develop menu and choose **Develop → Allow Unsigned Extensions** for this local development build. Then enable **MeetBridge** under **Safari → Settings → Extensions** and allow it to access `meet.google.com` in the extension's website settings. It inspects link destinations and does not send browsing data to a service.
+
+### Enable the bundled Safari extension
+
+1. Move MeetBridge to Applications and open it once. Safari discovers the extension bundled inside the app after the app has been launched.
+2. In Safari, open **Safari → Settings → Advanced** and enable **Show Develop menu in menu bar** (the wording may be **Show features for web developers** on newer macOS versions).
+3. In the menu bar, choose **Develop → Allow Unsigned Extensions**.
+4. Open **Safari → Settings → Extensions** and check **MeetBridge**. If you use Safari profiles, make sure it is enabled for the profile you browse with.
+5. Grant MeetBridge website access. Allow `meet.google.com` for direct Meet links. To intercept a Meet link clicked on another site, such as Slack, also allow access to that site. Choose **Always Allow on Every Website** if you want it to catch Meet links wherever they appear; this lets the extension inspect link destinations on those pages.
+6. Reload any Safari pages that were already open.
+
+The extension only checks whether link destinations are Google Meet URLs; it does not send browsing data to a service. **Allow Unsigned Extensions** is needed for this unsigned testing build.
+
+### Fallback: load the extension temporarily from the repository
+
+If MeetBridge does not appear in Safari's Extensions settings or the bundled extension does not work, load the extension source directly:
+
+1. In Safari, choose **Develop → Add Temporary Extension…**.
+2. In the file picker, select the repository's `SafariExtension/` folder (the folder containing `manifest.json`), then choose **Select**.
+3. Grant the extension website access as described above, then reload the page you want to test.
+
+This is a temporary development install. Safari removes temporary extensions when you quit Safari, so repeat these steps after restarting Safari. Keep the repository folder in place while using the temporary extension.
+
 - Clicked Google Meet links in Safari and direct visits to `meet.google.com` are forwarded to MeetBridge. This also covers a Meet link opened from Slack when Safari is the default browser; Safari closes the temporary tab after forwarding a direct Meet navigation.
 - To have links from other apps open MeetBridge directly, select it as the default browser in **System Settings → Desktop & Dock**. Non-Meet links then open in MeetBridge's normal browser window.
 - The app validates custom-scheme links and only opens `https://meet.google.com` in the meeting window.
