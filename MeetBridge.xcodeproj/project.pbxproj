@@ -14,6 +14,7 @@
 		A10000000000000000000006 /* popup.css in Resources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000006 /* popup.css */; };
 		A10000000000000000000007 /* BuildHostApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000009 /* BuildHostApp.swift */; };
 		A10000000000000000000008 /* MeetBridgeExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = A20000000000000000000008 /* MeetBridgeExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A10000000000000000000009 /* background.js in Resources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000B /* background.js */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,6 +28,7 @@
 		A20000000000000000000008 /* MeetBridgeExtension.appex */ = {isa = PBXFileReference; explicitFileType = wrapper.app-extension; includeInIndex = 0; path = MeetBridgeExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A20000000000000000000009 /* BuildHostApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildHostApp.swift; sourceTree = "<group>"; };
 		A2000000000000000000000A /* MeetBridgeExtensionBuildHost.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MeetBridgeExtensionBuildHost.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A2000000000000000000000B /* background.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = background.js; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,6 +53,7 @@
 			A20000000000000000000004 /* popup.html */,
 			A20000000000000000000005 /* popup.js */,
 			A20000000000000000000006 /* popup.css */,
+			A2000000000000000000000B /* background.js */,
 			A20000000000000000000007 /* ExtensionInfo.plist */,
 		); };
 		A40000000000000000000003 /* Products */ = {isa = PBXGroup; name = Products; sourceTree = "<group>"; children = (
@@ -118,6 +121,7 @@
 			A10000000000000000000004 /* popup.html in Resources */,
 			A10000000000000000000005 /* popup.js in Resources */,
 			A10000000000000000000006 /* popup.css in Resources */,
+			A10000000000000000000009 /* background.js in Resources */,
 		); runOnlyForDeploymentPostprocessing = 0; };
 		A30000000000000000000009 /* Host Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXResourcesBuildPhase section */

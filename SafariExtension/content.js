@@ -20,16 +20,25 @@
     }
   }
 
-  function forwardToMeetBridge(value) {
+  function forwardToMeetBridge(value, closeSafariTab = false) {
     const meetURL = getMeetURL(value);
     if (!meetURL) return false;
+
+    if (closeSafariTab) {
+      try {
+        browser.runtime.sendMessage({ type: 'meetbridge:close-forwarded-tab' }).catch(() => {});
+      } catch {
+        // Opening the meeting should still work if Safari cannot close this tab.
+      }
+    }
+
     window.location.replace(`${appScheme}${encodeURIComponent(meetURL)}`);
     return true;
   }
 
   // Slack and other apps open a Meet URL as a direct Safari navigation, so there
   // is no link click inside the page for the click handler below to intercept.
-  if (window.top === window && forwardToMeetBridge(window.location.href)) {
+  if (window.top === window && forwardToMeetBridge(window.location.href, true)) {
     return;
   }
 

@@ -5,6 +5,9 @@
   "version": "1.0.0",
   "permissions": ["activeTab"],
   "host_permissions": ["http://*/*", "https://*/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
   "action": {
     "default_title": "Open Meet in MeetBridge",
     "default_popup": "popup.html"

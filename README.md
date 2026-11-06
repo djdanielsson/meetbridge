@@ -27,7 +27,7 @@ Install the Git hooks once with `brew install pre-commit` and `pre-commit instal
 
 - On the home screen, choose **go to the Google Meet homepage** to open `meet.google.com` inside MeetBridge, or paste a specific meeting link in the join field.
 - In Safari, enable the Develop menu and choose **Develop → Allow Unsigned Extensions** for this local development build. Then enable **MeetBridge** under **Safari → Settings → Extensions** and allow it to access `meet.google.com` in the extension's website settings. It inspects link destinations and does not send browsing data to a service.
-- Clicked Google Meet links in Safari and direct visits to `meet.google.com` are forwarded to MeetBridge. This also covers a Meet link opened from Slack when Safari is the default browser.
+- Clicked Google Meet links in Safari and direct visits to `meet.google.com` are forwarded to MeetBridge. This also covers a Meet link opened from Slack when Safari is the default browser; Safari closes the temporary tab after forwarding a direct Meet navigation.
 - To have links from other apps open MeetBridge directly, select it as the default browser in **System Settings → Desktop & Dock**. Non-Meet links then open in MeetBridge's normal browser window.
 - The app validates custom-scheme links and only opens `https://meet.google.com` in the meeting window.
 
