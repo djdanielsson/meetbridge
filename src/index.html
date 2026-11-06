@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self';">
+    <title>MeetBridge</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="brand">
+        <div class="mark" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div>
+          <p class="eyebrow">YOUR MEETING APP</p>
+          <h1>MeetBridge</h1>
+        </div>
+        <div class="runtime"><span class="dot"></span> Chromium inside MeetBridge</div>
+      </header>
+
+      <section class="join-card" aria-labelledby="join-title">
+        <div class="card-copy">
+          <p class="eyebrow blue">GOOGLE MEET</p>
+          <h2 id="join-title">Join a meeting</h2>
+          <p>Paste a meeting link and it opens right here in MeetBridge.</p>
+        </div>
+        <form id="join-form">
+          <label for="meeting-link">Meeting link</label>
+          <div class="input-row">
+            <input id="meeting-link" name="meeting-link" type="url" placeholder="https://meet.google.com/abc-defg-hij" autocomplete="url" required>
+            <button type="submit">Open Meet <span aria-hidden="true">↗</span></button>
+          </div>
+          <p id="status" class="status" role="status">MeetBridge has its own session. Google may restrict sign-in inside an embedded browser.</p>
+        </form>
+        <p class="home-link-row">Or <a id="main-meet-link" href="https://meet.google.com/">go to the Google Meet homepage <span aria-hidden="true">↗</span></a></p>
+      </section>
+
+      <section class="feature-grid" aria-label="MeetBridge features">
+        <article class="feature">
+          <div class="feature-icon blue-bg">◉</div>
+          <h3>Meet inside this app</h3>
+          <p>No Chrome window opens. Meet runs in the Chromium browser bundled with MeetBridge.</p>
+        </article>
+        <article class="feature">
+          <div class="feature-icon green-bg">↗</div>
+          <h3>Bring links here</h3>
+          <p>Enable the Safari extension, or set MeetBridge as your default browser for links from other apps.</p>
+        </article>
+        <article class="feature">
+          <div class="feature-icon purple-bg">◌</div>
+          <h3>Your choice of devices</h3>
+          <p>MeetBridge asks before granting camera or microphone access. Screen sharing asks which window or display to share.</p>
+        </article>
+      </section>
+
+      <section class="streamdeck" aria-labelledby="streamdeck-title">
+        <div class="streamdeck-heading">
+          <div>
+            <p class="eyebrow blue">STREAM DECK</p>
+            <h2 id="streamdeck-title">Control Meet from your Stream Deck</h2>
+            <p>In Stream Deck, add a <strong>System → Website</strong> action for each button below and enable <strong>GET request in background</strong>. These local links work while MeetBridge is open.</p>
+          </div>
+        </div>
+        <p id="streamdeck-status" class="status" role="status" aria-live="polite">Preparing local controls…</p>
+        <div id="streamdeck-actions" class="streamdeck-actions"></div>
+        <p class="streamdeck-note">Keep these control links private. Notes and recording depend on your account and meeting permissions. Meet may ask you to confirm before they start.</p>
+      </section>
+
+      <section class="device-check" aria-labelledby="device-check-title">
+        <div>
+          <p class="eyebrow blue">TROUBLESHOOTING</p>
+          <h2 id="device-check-title">Check your camera and microphone</h2>
+          <p>The check asks macOS for access, then verifies that MeetBridge can open both devices.</p>
+        </div>
+        <div class="device-check-actions">
+          <button id="device-check-button" type="button">Check devices</button>
+          <button id="forget-meet-approval-button" class="secondary-button" type="button">Forget saved Meet approval</button>
+        </div>
+        <p id="device-check-status" class="status" role="status" aria-live="polite">Not checked yet.</p>
+      </section>
+
+      <footer>MeetBridge keeps its own browser data on this Mac.</footer>
+    </main>
+    <script src="renderer.js"></script>
+  </body>
+</html>

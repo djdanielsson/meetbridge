@@ -1,0 +1,14 @@
+build/
+DerivedData/
+dist/
+node_modules/
+.DS_Store
+
+# Generated macOS app and installer artifacts
+*.app/
+*.xcarchive/
+*.dmg
+*.dmg.blockmap
+*.zip
+*.zip.blockmap
+*.asar

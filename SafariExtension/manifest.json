@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "MeetBridge",
+  "description": "Open Google Meet links inside the MeetBridge app.",
+  "version": "1.0.0",
+  "permissions": ["activeTab"],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "action": {
+    "default_title": "Open Meet in MeetBridge",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ]
+}
