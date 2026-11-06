@@ -1,4 +1,14 @@
-const { app, BrowserWindow, clipboard, desktopCapturer, dialog, ipcMain, shell, session, systemPreferences } = require('electron');
+const {
+  app,
+  BrowserWindow,
+  clipboard,
+  desktopCapturer,
+  dialog,
+  ipcMain,
+  shell,
+  session,
+  systemPreferences,
+} = require('electron');
 const crypto = require('node:crypto');
 const http = require('node:http');
 const fs = require('node:fs');
@@ -19,7 +29,7 @@ const STREAM_DECK_ACTIONS = [
   { id: 'reaction-thumbs-up', label: 'Send 👍 reaction' },
   { id: 'notes', label: 'Start Meet notes' },
   { id: 'leave', label: 'Leave meeting' },
-  { id: 'record', label: 'Record / stop recording' }
+  { id: 'record', label: 'Record / stop recording' },
 ];
 
 let mainWindow = null;
@@ -32,11 +42,13 @@ let streamDeckServerError = null;
 function isMeetURL(value) {
   try {
     const url = new URL(value);
-    return url.protocol === 'https:' &&
+    return (
+      url.protocol === 'https:' &&
       url.hostname === MEET_HOST &&
       !url.username &&
       !url.password &&
-      (!url.port || url.port === '443');
+      (!url.port || url.port === '443')
+    );
   } catch {
     return false;
   }
@@ -60,10 +72,12 @@ function isWebURL(value) {
 function isStreamDeckControlURL(value) {
   try {
     const url = new URL(value);
-    return url.protocol === 'http:' &&
+    return (
+      url.protocol === 'http:' &&
       url.hostname === '127.0.0.1' &&
       url.port === String(STREAM_DECK_PORT) &&
-      url.pathname.startsWith('/v1/control/');
+      url.pathname.startsWith('/v1/control/')
+    );
   } catch {
     return false;
   }
@@ -173,7 +187,9 @@ function saveRememberedMeetApproval(origin, mediaTypes) {
 
   const saved = {
     version: 1,
-    meet: Object.fromEntries([...REMEMBERED_MEET_APPROVALS].map(([meetOrigin, approvedTypes]) => [meetOrigin, [...approvedTypes]]))
+    meet: Object.fromEntries(
+      [...REMEMBERED_MEET_APPROVALS].map(([meetOrigin, approvedTypes]) => [meetOrigin, [...approvedTypes]]),
+    ),
   };
   const filePath = mediaApprovalsPath();
   const temporaryPath = `${filePath}.tmp`;
@@ -185,7 +201,9 @@ function saveRememberedMeetApproval(origin, mediaTypes) {
     return true;
   } catch (error) {
     console.error('Could not save MeetBridge media approval:', error);
-    try { fs.rmSync(temporaryPath, { force: true }); } catch {}
+    try {
+      fs.rmSync(temporaryPath, { force: true });
+    } catch {}
     return false;
   }
 }
@@ -231,115 +249,134 @@ function streamDeckControlURLs() {
   if (!streamDeckServer || !streamDeckServer.listening || !streamDeckSecret) return [];
   return STREAM_DECK_ACTIONS.map((action) => ({
     ...action,
-    url: `http://127.0.0.1:${STREAM_DECK_PORT}/v1/control/${action.id}?key=${streamDeckSecret}`
+    url: `http://127.0.0.1:${STREAM_DECK_PORT}/v1/control/${action.id}?key=${streamDeckSecret}`,
   }));
 }
 
+// This function is serialized and executed in Meet's renderer context.
+/* global document */
 function runMeetBridgeControl(controlName) {
-    const labelOf = (element) => ((element.getAttribute('aria-label') || '') + ' ' +
-      (element.getAttribute('title') || '') + ' ' +
-      (element.innerText || element.textContent || ''))
+  const labelOf = (element) =>
+    (
+      (element.getAttribute('aria-label') || '') +
+      ' ' +
+      (element.getAttribute('title') || '') +
+      ' ' +
+      (element.innerText || element.textContent || '')
+    )
       .replace(/\s+/g, ' ')
       .trim()
       .toLowerCase();
-    const controls = () => Array.from(document.querySelectorAll('button, [role="button"], [role="menuitem"], [role="option"], [role="gridcell"]'))
-      .filter((element) => element.getClientRects().length > 0);
-    const patterns = {
-      microphone: /(?:turn off|turn on|mute|unmute).{0,24}(?:microphone|mic)|(?:microphone|mic).{0,24}(?:turn off|turn on|mute|unmute)/,
-      camera: /(?:turn off|turn on|stop|start).{0,24}(?:camera|video)|(?:camera|video).{0,24}(?:turn off|turn on|stop|start)/,
-      hand: /(?:raise|lower)(?: your)? hand/,
-      leave: /\b(?:leave|end)(?: the)? (?:call|meeting)\b/,
-      notes: /take notes|start taking notes|notes with gemini|meeting notes/,
-      reaction: /send a reaction|reactions?/,
-      recordStart: /start recording|record meeting/,
-      recordStop: /stop recording/,
-      meetingTools: /meeting tools/,
-      moreOptions: /more options/
-    };
-    const findControl = (pattern) => controls().find((element) => pattern.test(labelOf(element)));
-    const waitForControl = async (pattern, timeout = 1800) => {
-      const deadline = Date.now() + timeout;
-      let element = findControl(pattern);
-      while (!element && Date.now() < deadline) {
-        await new Promise((resolve) => setTimeout(resolve, 100));
-        element = findControl(pattern);
+  const controls = () =>
+    Array.from(
+      document.querySelectorAll('button, [role="button"], [role="menuitem"], [role="option"], [role="gridcell"]'),
+    ).filter((element) => element.getClientRects().length > 0);
+  const patterns = {
+    microphone:
+      /(?:turn off|turn on|mute|unmute).{0,24}(?:microphone|mic)|(?:microphone|mic).{0,24}(?:turn off|turn on|mute|unmute)/,
+    camera:
+      /(?:turn off|turn on|stop|start).{0,24}(?:camera|video)|(?:camera|video).{0,24}(?:turn off|turn on|stop|start)/,
+    hand: /(?:raise|lower)(?: your)? hand/,
+    leave: /\b(?:leave|end)(?: the)? (?:call|meeting)\b/,
+    notes: /take notes|start taking notes|notes with gemini|meeting notes/,
+    reaction: /send a reaction|reactions?/,
+    recordStart: /start recording|record meeting/,
+    recordStop: /stop recording/,
+    meetingTools: /meeting tools/,
+    moreOptions: /more options/,
+  };
+  const findControl = (pattern) => controls().find((element) => pattern.test(labelOf(element)));
+  const waitForControl = async (pattern, timeout = 1800) => {
+    const deadline = Date.now() + timeout;
+    let element = findControl(pattern);
+    while (!element && Date.now() < deadline) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      element = findControl(pattern);
+    }
+    return element;
+  };
+  const click = (element) => {
+    if (!element || element.disabled || element.getAttribute('aria-disabled') === 'true') return false;
+    element.click();
+    return true;
+  };
+
+  if (controlName === 'reaction-thumbs-up') {
+    return (async () => {
+      const picker = findControl(patterns.reaction);
+      if (!click(picker)) return { ok: false, message: 'Meet does not show its reactions control right now.' };
+      const thumbsUp = await waitForControl(/thumbs? up|like|👍|1f44d/i);
+      if (!click(thumbsUp)) {
+        return { ok: false, message: 'Meet opened reactions, but a thumbs-up option was not found.' };
       }
-      return element;
-    };
-    const click = (element) => {
-      if (!element || element.disabled || element.getAttribute('aria-disabled') === 'true') return false;
-      element.click();
-      return true;
-    };
+      return { ok: true, message: 'Sent a thumbs-up reaction.' };
+    })();
+  }
 
-    if (controlName === 'reaction-thumbs-up') {
-      return (async () => {
-        const picker = findControl(patterns.reaction);
-        if (!click(picker)) return { ok: false, message: 'Meet does not show its reactions control right now.' };
-        const thumbsUp = await waitForControl(/thumbs? up|like|👍|1f44d/i);
-        if (!click(thumbsUp)) return { ok: false, message: 'Meet opened reactions, but a thumbs-up option was not found.' };
-        return { ok: true, message: 'Sent a thumbs-up reaction.' };
-      })();
-    }
+  if (controlName === 'notes') {
+    return (async () => {
+      let notesButton = findControl(patterns.notes);
+      if (!notesButton) {
+        const moreButton = findControl(patterns.moreOptions);
+        if (click(moreButton)) notesButton = await waitForControl(patterns.notes, 1000);
+      }
+      if (!click(notesButton)) {
+        return {
+          ok: false,
+          message: 'Meet did not expose its notes control. Notes may not be available for this account or meeting.',
+        };
+      }
+      return { ok: true, message: 'Meet opened its notes flow. Review and confirm it in the meeting.' };
+    })();
+  }
 
-    if (controlName === 'notes') {
-      return (async () => {
-        let notesButton = findControl(patterns.notes);
-        if (!notesButton) {
-          const moreButton = findControl(patterns.moreOptions);
-          if (click(moreButton)) notesButton = await waitForControl(patterns.notes, 1000);
-        }
-        if (!click(notesButton)) {
-          return { ok: false, message: 'Meet did not expose its notes control. Notes may not be available for this account or meeting.' };
-        }
-        return { ok: true, message: 'Meet opened its notes flow. Review and confirm it in the meeting.' };
-      })();
-    }
+  if (controlName === 'record') {
+    return (async () => {
+      const stopButton = findControl(patterns.recordStop);
+      if (click(stopButton)) return { ok: true, message: 'MeetBridge selected Stop recording.' };
 
-    if (controlName === 'record') {
-      return (async () => {
-        const stopButton = findControl(patterns.recordStop);
-        if (click(stopButton)) return { ok: true, message: 'MeetBridge selected Stop recording.' };
-
-        let startButton = findControl(patterns.recordStart);
-        if (!startButton) {
-          const toolsButton = findControl(patterns.meetingTools);
-          if (click(toolsButton)) {
-            const recordingItem = await waitForControl(/\brecording\b(?!.*meeting tools)/);
-            if (click(recordingItem)) {
-              const stopAfterMenu = await waitForControl(patterns.recordStop, 300);
-              if (click(stopAfterMenu)) return { ok: true, message: 'MeetBridge selected Stop recording.' };
-              startButton = await waitForControl(patterns.recordStart);
-            }
+      let startButton = findControl(patterns.recordStart);
+      if (!startButton) {
+        const toolsButton = findControl(patterns.meetingTools);
+        if (click(toolsButton)) {
+          const recordingItem = await waitForControl(/\brecording\b(?!.*meeting tools)/);
+          if (click(recordingItem)) {
+            const stopAfterMenu = await waitForControl(patterns.recordStop, 300);
+            if (click(stopAfterMenu)) return { ok: true, message: 'MeetBridge selected Stop recording.' };
+            startButton = await waitForControl(patterns.recordStart);
           }
         }
+      }
 
-        if (!startButton) {
-          const moreButton = findControl(patterns.moreOptions);
-          if (click(moreButton)) {
-            const recordItem = await waitForControl(/record meeting|\brecording\b/);
-            if (click(recordItem)) {
-              const stopAfterMenu = await waitForControl(patterns.recordStop, 300);
-              if (click(stopAfterMenu)) return { ok: true, message: 'MeetBridge selected Stop recording.' };
-              startButton = await waitForControl(patterns.recordStart);
-            }
+      if (!startButton) {
+        const moreButton = findControl(patterns.moreOptions);
+        if (click(moreButton)) {
+          const recordItem = await waitForControl(/record meeting|\brecording\b/);
+          if (click(recordItem)) {
+            const stopAfterMenu = await waitForControl(patterns.recordStop, 300);
+            if (click(stopAfterMenu)) return { ok: true, message: 'MeetBridge selected Stop recording.' };
+            startButton = await waitForControl(patterns.recordStart);
           }
         }
+      }
 
-        if (!click(startButton)) {
-          return { ok: false, message: 'Could not find Meet’s recording control. Check that recording is available for this meeting.' };
-        }
-        return { ok: true, message: 'Meet opened the recording confirmation. Review and confirm it in the meeting.' };
-      })();
-    }
+      if (!click(startButton)) {
+        return {
+          ok: false,
+          message: 'Could not find Meet’s recording control. Check that recording is available for this meeting.',
+        };
+      }
+      return { ok: true, message: 'Meet opened the recording confirmation. Review and confirm it in the meeting.' };
+    })();
+  }
 
-    const pattern = controlName === 'leave' ? patterns.leave : patterns[controlName];
-    const element = pattern && findControl(pattern);
-    if (!click(element)) {
-      const label = controlName === 'notes' ? 'Meet notes control' : controlName + ' control';
-      return { ok: false, message: 'Could not find the ' + label + '.' };
-    }
-    return { ok: true, message: 'MeetBridge sent the ' + controlName + ' action.' };
+  const pattern = controlName === 'leave' ? patterns.leave : patterns[controlName];
+  const element = pattern && findControl(pattern);
+  if (!click(element)) {
+    const label = controlName === 'notes' ? 'Meet notes control' : controlName + ' control';
+    return { ok: false, message: 'Could not find the ' + label + '.' };
+  }
+  return { ok: true, message: 'MeetBridge sent the ' + controlName + ' action.' };
 }
 
 async function controlMeet(action) {
@@ -429,7 +466,7 @@ function respondToStreamDeck(response, status, body) {
   response.writeHead(status, {
     'Cache-Control': 'no-store',
     'Content-Type': 'application/json; charset=utf-8',
-    'X-Content-Type-Options': 'nosniff'
+    'X-Content-Type-Options': 'nosniff',
   });
   response.end(JSON.stringify(body));
 }
@@ -463,8 +500,11 @@ function startStreamDeckServer() {
     streamDeckServer = http.createServer((request, response) => {
       handleStreamDeckRequest(request, response).catch((error) => {
         console.error('Stream Deck request failed:', error);
-        if (!response.headersSent) respondToStreamDeck(response, 500, { ok: false, message: 'MeetBridge could not run this control.' });
-        else response.destroy();
+        if (!response.headersSent) {
+          respondToStreamDeck(response, 500, { ok: false, message: 'MeetBridge could not run this control.' });
+        } else {
+          response.destroy();
+        }
       });
     });
 
@@ -495,7 +535,7 @@ async function requestMacOSMediaAccess(mediaTypes) {
     const macOSMediaType = mediaType === 'audio' ? 'microphone' : 'camera';
     try {
       if (systemPreferences.getMediaAccessStatus(macOSMediaType) === 'granted') continue;
-      if (!await systemPreferences.askForMediaAccess(macOSMediaType)) return false;
+      if (!(await systemPreferences.askForMediaAccess(macOSMediaType))) return false;
     } catch {
       return false;
     }
@@ -516,9 +556,7 @@ function configurePermissions() {
     if (!meetOrigin && !isDeviceCheck) return false;
     if (permission === 'media') {
       const origin = meetOrigin || APP_HOME_MEDIA_ORIGIN;
-      const mediaType = details?.mediaType === 'audio' || details?.mediaType === 'video'
-        ? details.mediaType
-        : null;
+      const mediaType = details?.mediaType === 'audio' || details?.mediaType === 'video' ? details.mediaType : null;
       if (mediaType) return MEDIA_DECISIONS.get(mediaPermissionKey(origin, mediaType)) === true;
       return ['audio', 'video'].every((type) => MEDIA_DECISIONS.get(mediaPermissionKey(origin, type)) === true);
     }
@@ -539,12 +577,14 @@ function configurePermissions() {
 
     const decisionOrigin = meetOrigin || APP_HOME_MEDIA_ORIGIN;
     const mediaTypes = requestedMediaTypes(details);
-    const pendingTypes = mediaTypes.filter((type) => MEDIA_DECISIONS.get(mediaPermissionKey(decisionOrigin, type)) !== true);
+    const pendingTypes = mediaTypes.filter(
+      (type) => MEDIA_DECISIONS.get(mediaPermissionKey(decisionOrigin, type)) !== true,
+    );
 
-    const requested = [
-      pendingTypes.includes('audio') ? 'microphone' : null,
-      pendingTypes.includes('video') ? 'camera' : null
-    ].filter(Boolean).join(' and ') || 'camera or microphone';
+    const requested =
+      [pendingTypes.includes('audio') ? 'microphone' : null, pendingTypes.includes('video') ? 'camera' : null]
+        .filter(Boolean)
+        .join(' and ') || 'camera or microphone';
 
     if (pendingTypes.length > 0) {
       let userAllowed = false;
@@ -558,7 +598,7 @@ function configurePermissions() {
             : 'macOS may also ask you to allow access in System Settings.',
           buttons: ['Allow', 'Don’t Allow'],
           defaultId: 1,
-          cancelId: 1
+          cancelId: 1,
         };
         const result = mainWindow
           ? await dialog.showMessageBox(mainWindow, prompt)
@@ -576,9 +616,10 @@ function configurePermissions() {
         type: 'warning',
         title: 'Camera or microphone access is off',
         message: `macOS has not granted MeetBridge access to your ${requested}.`,
-        detail: 'Open System Settings > Privacy & Security, allow MeetBridge under Camera and Microphone, then quit and reopen MeetBridge.',
+        detail:
+          'Open System Settings > Privacy & Security, allow MeetBridge under Camera and Microphone, then quit and reopen MeetBridge.',
         buttons: ['OK'],
-        defaultId: 0
+        defaultId: 0,
       };
       if (mainWindow) await dialog.showMessageBox(mainWindow, options);
       else await dialog.showMessageBox(options);
@@ -592,7 +633,7 @@ function configurePermissions() {
         title: 'Approval could not be saved',
         message: 'MeetBridge can use your devices for this session, but could not remember the approval for next time.',
         buttons: ['OK'],
-        defaultId: 0
+        defaultId: 0,
       };
       if (mainWindow) await dialog.showMessageBox(mainWindow, options);
       else await dialog.showMessageBox(options);
@@ -600,28 +641,34 @@ function configurePermissions() {
     callback(true);
   });
 
-  meetSession.setDisplayMediaRequestHandler((request, callback) => {
-    if (!isMeetOrigin(request.frame?.url || request.securityOrigin || '')) {
-      callback(null);
-      return;
-    }
+  meetSession.setDisplayMediaRequestHandler(
+    (request, callback) => {
+      if (!isMeetOrigin(request.frame?.url || request.securityOrigin || '')) {
+        callback(null);
+        return;
+      }
 
-    desktopCapturer.getSources({ types: ['screen', 'window'] }).then(async (sources) => {
-      if (sources.length === 0) return callback(null);
-      const choices = sources.map((source) => source.name).concat('Cancel');
-      const picked = await dialog.showMessageBox(mainWindow, {
-        type: 'question',
-        title: 'Choose what to share',
-        message: 'Select a screen or window to share with Google Meet.',
-        buttons: choices,
-        cancelId: choices.length - 1,
-        defaultId: 0,
-        noLink: true
-      });
-      const source = sources[picked.response];
-      callback(source ? { video: source } : null);
-    }).catch(() => callback(null));
-  }, { useSystemPicker: true });
+      desktopCapturer
+        .getSources({ types: ['screen', 'window'] })
+        .then(async (sources) => {
+          if (sources.length === 0) return callback(null);
+          const choices = sources.map((source) => source.name).concat('Cancel');
+          const picked = await dialog.showMessageBox(mainWindow, {
+            type: 'question',
+            title: 'Choose what to share',
+            message: 'Select a screen or window to share with Google Meet.',
+            buttons: choices,
+            cancelId: choices.length - 1,
+            defaultId: 0,
+            noLink: true,
+          });
+          const source = sources[picked.response];
+          callback(source ? { video: source } : null);
+        })
+        .catch(() => callback(null));
+    },
+    { useSystemPicker: true },
+  );
 }
 
 function createWindow(targetURL = null) {
@@ -644,8 +691,8 @@ function createWindow(targetURL = null) {
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
-      webSecurity: true
-    }
+      webSecurity: true,
+    },
   });
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
@@ -664,7 +711,9 @@ function createWindow(targetURL = null) {
     if (!isWebURL(url)) event.preventDefault();
   });
 
-  mainWindow.on('closed', () => { mainWindow = null; });
+  mainWindow.on('closed', () => {
+    mainWindow = null;
+  });
 
   if (targetURL) mainWindow.loadURL(targetURL);
   else mainWindow.loadFile(path.join(__dirname, 'index.html'));
@@ -675,9 +724,8 @@ function createWindow(targetURL = null) {
 function isGoogleAuthURL(value) {
   try {
     const url = new URL(value);
-    return url.protocol === 'https:' && (
-      url.hostname === 'accounts.google.com' ||
-      url.hostname === 'consent.google.com'
+    return (
+      url.protocol === 'https:' && (url.hostname === 'accounts.google.com' || url.hostname === 'consent.google.com')
     );
   } catch {
     return false;
@@ -697,29 +745,39 @@ ipcMain.handle('open-meeting', (event, value) => {
 });
 
 ipcMain.handle('forget-meet-media-approval', (event) => {
-  if (!isAppHome(event.sender)) return { ok: false, message: 'Open the MeetBridge home screen to change saved approvals.' };
+  if (!isAppHome(event.sender)) {
+    return { ok: false, message: 'Open the MeetBridge home screen to change saved approvals.' };
+  }
   if (!forgetRememberedMeetApprovals()) {
     return { ok: false, message: 'MeetBridge could not clear the saved approval.' };
   }
-  return { ok: true, message: 'Saved Google Meet approval cleared. MeetBridge will ask again next time; macOS access remains enabled.' };
+  return {
+    ok: true,
+    message: 'Saved Google Meet approval cleared. MeetBridge will ask again next time; macOS access remains enabled.',
+  };
 });
 
 ipcMain.handle('get-stream-deck-controls', (event) => {
-  if (!isAppHome(event.sender)) return { ok: false, message: 'Open the MeetBridge home screen to view Stream Deck setup.' };
+  if (!isAppHome(event.sender)) {
+    return { ok: false, message: 'Open the MeetBridge home screen to view Stream Deck setup.' };
+  }
   if (!streamDeckServer || !streamDeckServer.listening) {
     return {
       ok: false,
-      message: streamDeckServerError?.code === 'EADDRINUSE'
-        ? 'MeetBridge could not start Stream Deck controls because its local port is already in use.'
-        : 'MeetBridge could not start its local Stream Deck controls.',
-      actions: []
+      message:
+        streamDeckServerError?.code === 'EADDRINUSE'
+          ? 'MeetBridge could not start Stream Deck controls because its local port is already in use.'
+          : 'MeetBridge could not start its local Stream Deck controls.',
+      actions: [],
     };
   }
   return { ok: true, message: 'Local controls are ready while MeetBridge is open.', actions: streamDeckControlURLs() };
 });
 
 ipcMain.handle('copy-stream-deck-control-url', (event, actionId) => {
-  if (!isAppHome(event.sender)) return { ok: false, message: 'Open the MeetBridge home screen to copy a Stream Deck URL.' };
+  if (!isAppHome(event.sender)) {
+    return { ok: false, message: 'Open the MeetBridge home screen to copy a Stream Deck URL.' };
+  }
   const matchingURL = streamDeckControlURLs().find((action) => action.id === actionId)?.url;
   if (!matchingURL) return { ok: false, message: 'That Stream Deck action is unavailable.' };
   clipboard.writeText(matchingURL);

@@ -1,27 +1,18 @@
 name: Build macOS app
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
-  workflow_dispatch:
+  release:
+    types: [published]
 
 permissions:
   contents: read
 
 jobs:
   build:
-    name: Build ${{ matrix.arch }} DMG
-    runs-on: ${{ matrix.runner }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - runner: macos-15
-            arch: arm64
-          - runner: macos-15-intel
-            arch: x64
+    name: Build arm64 app packages
+    runs-on: macos-15
 
     steps:
       - name: Check out source
@@ -50,10 +41,34 @@ jobs:
       - name: Build the app and Safari extension
         run: npm run package:mac
 
-      - name: Upload DMG
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: MeetBridge-${{ matrix.arch }}-${{ github.sha }}
-          path: dist/*.dmg
+          name: MeetBridge-arm64-${{ github.sha }}
+          path: |
+            dist/*.dmg
+            dist/*.zip
           if-no-files-found: error
           retention-days: 14
+
+  publish-release:
+    name: Publish release ZIP
+    if: github.event_name == 'release'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v7
+        with:
+          name: MeetBridge-arm64-${{ github.sha }}
+          path: dist
+
+      - name: Attach app ZIP to GitHub release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ github.event.release.tag_name }}
+          files: dist/*.zip
+          fail_on_unmatched_files: true

@@ -12,7 +12,7 @@ module.exports = async function embedSafariExtension(context) {
     'Build',
     'Products',
     'Release',
-    'MeetBridgeExtension.appex'
+    'MeetBridgeExtension.appex',
   );
   const appPath = context.appOutDir.endsWith('.app')
     ? context.appOutDir

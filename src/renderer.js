@@ -30,17 +30,21 @@ async function checkInputDevice(name, kind) {
     const devices = await navigator.mediaDevices.enumerateDevices();
     const deviceKind = kind === 'camera' ? 'videoinput' : 'audioinput';
     const inputs = devices.filter((device) => device.kind === deviceKind);
-    const activeLabels = stream.getTracks().map((track) => track.label).filter(Boolean);
+    const activeLabels = stream
+      .getTracks()
+      .map((track) => track.label)
+      .filter(Boolean);
     const labels = activeLabels.length ? activeLabels : inputs.map((device) => device.label).filter(Boolean);
     return { ok: true, message: `${name}: ${labels.join(', ') || `${inputs.length} device(s) found`}` };
   } catch (error) {
-    const reason = error.name === 'NotFoundError'
-      ? 'no device was returned'
-      : error.name === 'NotReadableError'
-        ? 'device is busy or could not be opened'
-        : error.name === 'NotAllowedError'
-          ? 'access was denied'
-          : (error.message || error.name || 'unknown error');
+    const reason =
+      error.name === 'NotFoundError'
+        ? 'no device was returned'
+        : error.name === 'NotReadableError'
+          ? 'device is busy or could not be opened'
+          : error.name === 'NotAllowedError'
+            ? 'access was denied'
+            : error.message || error.name || 'unknown error';
     return { ok: false, message: `${name}: ${reason} (${error.name || 'Error'})` };
   } finally {
     stream?.getTracks().forEach((track) => track.stop());
@@ -103,7 +107,9 @@ function addStreamDeckAction(action) {
       const result = await window.meetBridge.copyStreamDeckControlURL(action.id);
       if (!result.ok) throw new Error(result.message || 'Could not copy this URL.');
       copy.textContent = 'Copied';
-      setTimeout(() => { copy.textContent = 'Copy URL'; }, 1200);
+      setTimeout(() => {
+        copy.textContent = 'Copy URL';
+      }, 1200);
     } catch (error) {
       streamDeckStatus.textContent = error.message || 'Could not copy the URL.';
       streamDeckStatus.dataset.error = 'true';

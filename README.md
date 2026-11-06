@@ -11,13 +11,13 @@ npm install
 npm start
 ```
 
-To package a local macOS installer image with the Safari extension embedded:
+To package an Apple silicon DMG and ZIP with the Safari extension embedded:
 
 ```sh
 npm run package:mac
 ```
 
-The `.dmg` is written to `dist/`. The person testing it does not need Node.js or npm: open the disk image, drag MeetBridge to Applications, then launch it once so macOS registers its URL handlers and Safari discovers the embedded extension. The app uses Chromium from Electron 45. This is an unsigned development build; wider distribution requires signing and notarization.
+The `.dmg` and `.zip` are written to `dist/` and target Apple silicon (`arm64`) only. Published GitHub releases attach the `.zip` so it can be downloaded directly from the release page. The person testing it does not need Node.js or npm: open the disk image, drag MeetBridge to Applications, then launch it once so macOS registers its URL handlers and Safari discovers the embedded extension. The app uses Chromium from Electron 45. This is an unsigned development build; wider distribution requires signing and notarization.
 
 ## Code checks
 
@@ -26,9 +26,9 @@ Install the Git hooks once with `brew install pre-commit` and `pre-commit instal
 ## Link routing
 
 - On the home screen, choose **go to the Google Meet homepage** to open `meet.google.com` inside MeetBridge, or paste a specific meeting link in the join field.
-- In Safari, enable the Develop menu and choose **Develop → Allow Unsigned Extensions** for this local development build. Then enable **MeetBridge** under **Safari → Settings → Extensions**. Safari asks for website access so the extension can find Meet links on pages you visit. It inspects link destinations and does not send browsing data to a service.
-- Clicked Google Meet links in Safari open in MeetBridge. On a Meet page entered directly in Safari, use the extension button and choose **Open in MeetBridge**.
-- Links from other apps can be routed through MeetBridge by selecting it as the default browser in **System Settings → Desktop & Dock**. Non-Meet links then open in MeetBridge's normal browser window.
+- In Safari, enable the Develop menu and choose **Develop → Allow Unsigned Extensions** for this local development build. Then enable **MeetBridge** under **Safari → Settings → Extensions** and allow it to access `meet.google.com` in the extension's website settings. It inspects link destinations and does not send browsing data to a service.
+- Clicked Google Meet links in Safari and direct visits to `meet.google.com` are forwarded to MeetBridge. This also covers a Meet link opened from Slack when Safari is the default browser.
+- To have links from other apps open MeetBridge directly, select it as the default browser in **System Settings → Desktop & Dock**. Non-Meet links then open in MeetBridge's normal browser window.
 - The app validates custom-scheme links and only opens `https://meet.google.com` in the meeting window.
 
 ## Camera, microphone, and screen sharing
