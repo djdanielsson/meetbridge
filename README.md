@@ -19,6 +19,10 @@ npm run package:mac
 
 The `.dmg` is written to `dist/`. The person testing it does not need Node.js or npm: open the disk image, drag MeetBridge to Applications, then launch it once so macOS registers its URL handlers and Safari discovers the embedded extension. The app uses Chromium from Electron 45. This is an unsigned development build; wider distribution requires signing and notarization.
 
+## Code checks
+
+Install the Git hooks once with `brew install pre-commit` and `pre-commit install`. Before the first commit, run `pre-commit run --all-files` and stage any files it formats. The hooks check JavaScript with ESLint, format supported source and configuration files with Prettier, lint Swift with SwiftLint, validate Xcode property lists and scheme XML, and check common file hygiene issues. The GitHub Actions build runs the same checks for pushes and pull requests to `main`.
+
 ## Link routing
 
 - On the home screen, choose **go to the Google Meet homepage** to open `meet.google.com` inside MeetBridge, or paste a specific meeting link in the join field.

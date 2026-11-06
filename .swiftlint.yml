@@ -1,0 +1,12 @@
+included:
+  - SafariExtension
+  - SafariExtensionHost
+
+excluded:
+  - build
+  - dist
+  - node_modules
+
+line_length:
+  warning: 120
+  error: 160

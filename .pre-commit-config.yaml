@@ -1,0 +1,48 @@
+minimum_pre_commit_version: '4.7.0'
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-added-large-files
+
+  - repo: local
+    hooks:
+      - id: eslint
+        name: ESLint
+        entry: eslint --config eslint.config.cjs --max-warnings=0
+        language: node
+        additional_dependencies:
+          - eslint@10.14.0
+        types: [javascript]
+        files: ^(src|SafariExtension)/.*\.js$|^scripts/.*\.cjs$|^eslint\.config\.cjs$
+
+      - id: prettier
+        name: Prettier
+        entry: prettier --write
+        language: node
+        additional_dependencies:
+          - prettier@3.9.10
+        types_or: [javascript, json, yaml, html, css, markdown]
+
+      - id: validate-apple-plists
+        name: Validate Xcode property lists
+        entry: plutil -lint
+        language: system
+        files: '\.(plist|pbxproj)$'
+
+      - id: validate-xcode-scheme
+        name: Validate Xcode scheme XML
+        entry: xmllint --noout
+        language: system
+        files: '\.xcscheme$'
+
+  - repo: https://github.com/realm/SwiftLint
+    rev: 0.65.1
+    hooks:
+      - id: swiftlint
+        args: [--strict]
