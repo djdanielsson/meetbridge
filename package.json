@@ -7,7 +7,7 @@
   "scripts": {
     "start": "electron .",
     "build:safari-extension": "xcodebuild -project MeetBridge.xcodeproj -scheme MeetBridgeExtension -configuration Release -derivedDataPath build/safari-extension ARCHS=arm64 CODE_SIGNING_ALLOWED=NO build",
-    "package:mac": "npm run build:safari-extension && electron-builder --mac dmg --arm64 && ditto -c -k --sequesterRsrc --keepParent dist/mac-arm64/MeetBridge.app dist/MeetBridge-${npm_package_version}-arm64.zip"
+    "package:mac": "npm run build:safari-extension && electron-builder --mac dmg --arm64 --publish never && ditto -c -k --sequesterRsrc --keepParent dist/mac-arm64/MeetBridge.app dist/MeetBridge-${npm_package_version}-arm64.zip"
   },
   "devDependencies": {
     "electron": "^45.2.1",
