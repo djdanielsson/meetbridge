@@ -19,6 +19,16 @@ npm run package:mac
 
 The `.dmg` and `.zip` are written to `dist/` and target Apple silicon (`arm64`) only. Published GitHub releases attach the `.zip` so it can be downloaded directly from the release page. The person testing it does not need Node.js or npm: open the disk image, drag MeetBridge to Applications, then launch it once so macOS registers its URL handlers and Safari discovers the embedded extension. The app uses Chromium from Electron 45. This is an unsigned development build; wider distribution requires signing and notarization.
 
+### Open an unsigned download
+
+Because the release build is unsigned, macOS may block it as damaged or from an unidentified developer. After moving MeetBridge to Applications, remove the download quarantine attribute with:
+
+```sh
+xattr -dr com.apple.quarantine /Applications/MeetBridge.app
+```
+
+Then open MeetBridge from Applications. If you placed it elsewhere, replace `/Applications/MeetBridge.app` with the app's full path. Only do this for a copy of MeetBridge you trust.
+
 ## Code checks
 
 Install the Git hooks once with `brew install pre-commit` and `pre-commit install`. Before the first commit, run `pre-commit run --all-files` and stage any files it formats. The hooks check JavaScript with ESLint, format supported source and configuration files with Prettier, lint Swift with SwiftLint, validate Xcode property lists and scheme XML, and check common file hygiene issues. The GitHub Actions build runs the same checks for pushes and pull requests to `main`.
