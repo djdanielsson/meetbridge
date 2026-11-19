@@ -31,7 +31,7 @@ Then open MeetBridge from Applications. If you placed it elsewhere, replace `/Ap
 
 ## Code checks
 
-Install the Git hooks once with `brew install pre-commit` and `pre-commit install`. Before the first commit, run `pre-commit run --all-files` and stage any files it formats. The hooks check JavaScript with ESLint, format supported source and configuration files with Prettier, lint Swift with SwiftLint, validate Xcode property lists and scheme XML, and check common file hygiene issues. The GitHub Actions build runs the same checks for pushes and pull requests to `main`.
+Install the Git hooks once with `brew install pre-commit` and `pre-commit install`. Before the first commit, run `pre-commit run --all-files` and stage any files it formats. The hooks check JavaScript with ESLint, format supported source and configuration files with Prettier, lint Swift with SwiftLint, validate Xcode property lists and scheme XML, and check common file hygiene issues. The macOS build workflow runs the same checks for pull requests targeting `main` and when a GitHub release is published.
 
 ## Link routing
 
