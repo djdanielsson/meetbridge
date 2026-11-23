@@ -10,7 +10,7 @@
     "package:mac": "npm run build:safari-extension && electron-builder --mac dmg --arm64 --publish never && ditto -c -k --sequesterRsrc --keepParent dist/mac-arm64/MeetBridge.app dist/MeetBridge-${npm_package_version}-arm64.zip"
   },
   "devDependencies": {
-    "electron": "^45.3.2",
+    "electron": "^45.4.1",
     "electron-builder": "26.18.0"
   },
   "build": {
